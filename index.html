@@ -1,86 +1,80 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>قرآن هداية</title>
+<title>Quran Hidaya</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--g:#0D6E5B;--g2:#0A5849;--gold:#C9A44F;--bg:#f5faf8;--txt:#18312e}
-@media(prefers-color-scheme:dark){:root{--bg:#071513;--txt:#fff}}
-*{box-sizing:border-box}body{margin:0;font-family:Cairo,sans-serif;background:
-radial-gradient(circle at top left,#0d6e5b22,transparent 30%),
-radial-gradient(circle at bottom right,#c9a44f22,transparent 30%),var(--bg);
-display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.card{max-width:520px;width:100%;padding:38px;border-radius:28px;background:rgba(255,255,255,.72);backdrop-filter:blur(18px);box-shadow:0 20px 60px rgba(0,0,0,.12);text-align:center}
-.logo{font-size:50px;font-weight:800;color:var(--g)}.logo span{color:var(--gold)}
+:root{--g:#0D6E5B;--g2:#0A5849;--gold:#C9A44F;--bg:#f5faf8;--card:rgba(255,255,255,.72);--txt:#18312e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Cairo,sans-serif;background:radial-gradient(circle at top left,#0d6e5b22,transparent 30%),radial-gradient(circle at bottom right,#c9a44f22,transparent 30%),var(--bg);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;color:var(--txt)}
+.card{max-width:520px;width:100%;padding:38px;border-radius:28px;background:var(--card);backdrop-filter:blur(18px);box-shadow:0 20px 60px rgba(0,0,0,.12);text-align:center}
+.logo{font-size:50px;font-weight:800;color:var(--g)} .logo span{color:var(--gold)}
 .badge{display:inline-block;margin:12px 0 18px;padding:8px 16px;border-radius:99px;background:#e8f4f1;color:var(--g);font-weight:700}
 #status{font-size:20px;font-weight:700;color:var(--g);margin:12px 0}
 .progress{height:8px;background:#dfe8e5;border-radius:99px;overflow:hidden;margin:20px 0}
 .bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--g));transition:width .8s}
-.btns{display:none;gap:12px;flex-direction:column}
-.btn{display:flex;align-items:center;justify-content:center;padding:16px;border-radius:14px;text-decoration:none;font-weight:700}
-.play{background:linear-gradient(135deg,var(--g),var(--g2));color:#fff}
-.ios{border:2px solid var(--g);color:var(--g)}
+.btns{display:none;margin-top:18px}
+.btn{display:block;padding:16px;border-radius:14px;text-decoration:none;font-weight:700;background:linear-gradient(135deg,var(--g),var(--g2));color:#fff}
 .qr{display:none;margin-top:20px}
-.qr img{width:180px;height:180px;border-radius:12px;background:#fff;padding:8px}
+.qr img{width:180px;height:180px;background:#fff;padding:8px;border-radius:12px}
+.note{margin-top:14px;color:#6b7a77;font-size:14px}
 small{display:block;margin-top:16px;color:#6b7a77}
+
+@media (prefers-color-scheme: dark){
+:root{
+--bg:#071513;
+--card:rgba(12,28,25,.82);
+--txt:#ffffff;
+}
+.badge{background:#123a33;color:#dff7ef}
+.progress{background:#27423d}
+.note,small{color:#c9d4d1}
+}
+
 </style>
 </head>
 <body>
 <div class="card">
-<div class="logo">قرآن <span>هداية</span></div>
-<div class="badge">مرحبًا بك ✨</div>
-<div id="status">جارٍ اكتشاف جهازك...</div>
+<div class="logo" id="logo"></div>
+<div class="badge" id="badge"></div>
+<div id="status"></div>
 <div class="progress"><div class="bar" id="bar"></div></div>
-
-<div class="btns" id="btns">
-<a class="btn play" href="https://play.google.com/store/apps/details?id=app.hidaya">📱 تحميل للأندرويد</a>
-<a class="btn ios" href="https://apps.apple.com/eg/app/quran-hidaya-%D9%82%D8%B1%D8%A2%D9%86-%D9%87%D8%AF%D8%A7%D9%8A%D8%A9/id1566553099?l=ar">🍎 تحميل للآيفون</a>
-</div>
-
-<div class="qr" id="qrBox">
-<p>امسح الـ QR من الهاتف</p>
-<img id="qr">
-</div>
-
+<div class="btns" id="btns"><a id="storeBtn" class="btn" href="#">Open Store</a></div>
+<div class="qr" id="qrBox"><p id="qrText"></p><img id="qr"></div>
+<div class="note" id="note"></div>
 <small>© Hidaya App</small>
 </div>
-
 <script>
 const PLAY="https://play.google.com/store/apps/details?id=app.hidaya";
 const IOS="https://apps.apple.com/eg/app/quran-hidaya-%D9%82%D8%B1%D8%A2%D9%86-%D9%87%D8%AF%D8%A7%D9%8A%D8%A9/id1566553099?l=ar";
 const SMART="https://ahmedmoussa20.github.io/download/";
+const L=(navigator.language||"en").startsWith("ar")?"ar":"en";
+const T={
+ar:{title:'قرآن <span>هداية</span>',badge:'مرحبًا بك ✨',detect:'جارٍ اكتشاف جهازك...',desktop:'استخدم الزر أو امسح رمز QR',found:'تم اكتشاف ',opening:'جارٍ فتح ',btn:'فتح المتجر',note:'إذا لم يتم تحويلك تلقائيًا، اضغط على الزر.',qr:'امسح رمز QR بالهاتف'},
+en:{title:'Quran <span>Hidaya</span>',badge:'Welcome ✨',detect:'Detecting your device...',desktop:'Use the button below or scan the QR code',found:'Detected ',opening:'Opening ',btn:'Open Store',note:'If you are not redirected automatically, click the button.',qr:'Scan the QR code with your phone'}
+}[L];
+document.documentElement.lang=L;document.documentElement.dir=L=="ar"?"rtl":"ltr";
+logo.innerHTML=T.title;badge.textContent=T.badge;note.textContent=T.note;qrText.textContent=T.qr;storeBtn.textContent=T.btn;
 const ua=navigator.userAgent;
-const desktop=!/Android|iPhone|iPad|iPod/i.test(ua);
-const status=document.getElementById("status");
-const bar=document.getElementById("bar");
-let target=PLAY,name="Google Play";
-if(/iPad|iPhone|iPod/i.test(ua)){target=IOS;name="App Store";}
-if(desktop){
- status.innerHTML="استخدم الأزرار أو امسح رمز QR";
- document.getElementById("btns").style.display="flex";
- document.getElementById("qrBox").style.display="block";
- document.getElementById("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(SMART);
- bar.style.width="100%";
+const mobile=/Android|iPhone|iPad|iPod/i.test(ua);
+const ios=/iPhone|iPad|iPod/i.test(ua);
+const target=ios?IOS:PLAY;
+storeBtn.href=target;
+if(!mobile){
+status.textContent=T.desktop;
+btns.style.display="block";
+qrBox.style.display="block";
+qr.src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(SMART);
+bar.style.width="100%";
 }else{
- let msgs=[
- "جارٍ اكتشاف جهازك...",
- "✔ تم اكتشاف "+name,
- "جارٍ فتح "+name+"..."
- ];
- let i=0;
- function step(){
-   status.innerHTML=msgs[i];
-   bar.style.width=((i+1)/3*100)+"%";
-   i++;
-   if(i<msgs.length)setTimeout(step,900);
-   else setTimeout(()=>location.replace(target),700);
- }
- step();
+setTimeout(()=>btns.style.display="block",1800);
+const msgs=[T.detect,T.found+(ios?"App Store":"Google Play"),T.opening+(ios?"App Store":"Google Play")+"..."];
+let i=0;
+(function step(){status.textContent=msgs[i];bar.style.width=((i+1)/3*100)+"%";i++;if(i<msgs.length)setTimeout(step,900);else setTimeout(()=>location.replace(target),700);})();
 }
 </script>
-</body>
-</html>
+</body></html>
